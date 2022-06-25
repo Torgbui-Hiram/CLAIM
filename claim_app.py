@@ -1,13 +1,10 @@
 from tkinter import *
 from tkinter import ttk
-import pandas as pd
+from webbrowser import get
 from PIL import ImageTk
 from tkinter import messagebox
-# db = open('info.txt', 'r')
-# db = open('info.txt', 'a')
-# vals = db.write(f'{user}, {password}\n')
+import sqlite3
 
-# data = dict(zip(user, password))
 
 window = Tk()
 window.title('IAS REQUEST FORM')
@@ -33,6 +30,35 @@ authorised_date = StringVar()
 approved_lbl_en = StringVar()
 approval_signature = StringVar()
 approval_date_ent = StringVar()
+
+# ==============Database=====================
+con = sqlite3.connect("claim_db/claim_detail.db")
+# ========== CREATING  TABLE IN DATABASE=====
+cur = con.cursor()
+# cur.execute("""CREATE TABLE claim_info (
+#     REQUEST_DATE TEXT,
+#     TEAM_LEADER TEXT,
+#     STATION_NAME TEXT,
+#     ITEM TEXT,
+#     QUANTITY TEXT,
+#     DESCRIPTION TEXT,
+#     ITEM_COST TEXT,
+#     TOTAL_COST TEXT,
+#     REFRENCE_NO TEXT,
+#     PAYMENT_TYPE TEXT,
+#     PAYMENT_REF TEXT,
+#     AUTHORISED_BY TEXT,
+#     SIGNATURE TEXT,
+#     AUTHORISED_DATE TEXT,
+#     APPROVED_LBL TEXT,
+#     APPROVAL_SIGNATURE TEXT,
+#     APPROVAL_DATE TEXT
+#     )""")
+# con.commit()
+# con.close()
+
+# ============inserting data into database====
+
 # ============ Functions ====================
 
 
@@ -69,11 +95,18 @@ def cancel():
 
 
 def extra():
+    global item_gotten
+    item_gotten = [item_entry.get(), quantity_entry.get(
+    ), description_entry.get(), unit_cost_entry.get(), total_cost_entry.get()]
+
+    # =======clear entry==========
     item_entry.delete(0, END)
     quantity_entry.delete(0, END)
     description_entry.delete(0, END)
     unit_cost_entry.delete(0, END)
     total_cost_entry.delete(0, END)
+
+    print(item_gotten)
 
 
 def tatal_cost(e):
@@ -83,6 +116,31 @@ def tatal_cost(e):
     total = a*b
     total_cost_entry.insert(0, total)
     return total
+
+
+def submit():
+    cur.execute("INSERT INTO claim_info VALUES (:REQUEST_DATE,:TEAM_LEADER,:STATION_NAME,:ITEM,:QUANTITY,:DESCRIPTION,:ITEM_COST,:TOTAL_COST,:REFRENCE_NO,:PAYMENT_TYPE,:PAYMENT_REF,:AUTHORISED_BY,:SIGNATURE,:AUTHORISED_DATE,:APPROVED_LBL,:APPROVAL_SIGNATURE,:APPROVAL_DATE)",
+                {
+                    "REQUEST_DATE": request_date_entry.get(),
+                    "TEAM_LEADER": team_leader_entry.get(),
+                    "STATION_NAME": station_name_entry.get(),
+                    "ITEM": item_entry.get(),
+                    "QUANTITY": quantity_entry.get(),
+                    "DESCRIPTION": description_entry.get(),
+                    "ITEM_COST": item_entry.get(),
+                    "TOTAL_COST": total_cost_entry.get(),
+                    "REFRENCE_NO": refrence_no_entry.get(),
+                    "PAYMENT_TYPE": payment_type_entry.get(),
+                    "PAYMENT_REF": payment_ref_entry.get(),
+                    "AUTHORISED_BY": authorised_by_entry.get(),
+                    "SIGNATURE": authorised_by_entry.get(),
+                    "AUTHORISED_DATE": autorised_date_entry.get(),
+                    "APPROVED_LBL": approved_lbl_entry.get(),
+                    "APPROVAL_SIGNATURE": approval_signature_entry.get(),
+                    "APPROVAL_DATE": approval_date_entry.get()
+                })
+    con.commit()
+    con.close()
 
 
 # ===========================================
@@ -172,7 +230,8 @@ refrence_no_lbl = Label(window, font=('impact', 12),
                         text=('Ref No'), foreground='black').place(x=35, y=350)
 refrence_no_entry = ttk.Entry(
     window, textvariable=refrence_no, font=('Helvetica', 15, 'bold'))
-refrence_no_entry.place(width=50, x=85, y=350)
+refrence_no_entry.place(width=70, x=85, y=350)
+refrence_no_entry.insert(0, '#')
 
 payment_type_lbl = Label(window, font=('impact', 12),
                          text=('Payment Type'), foreground='black').place(x=160, y=350)
@@ -185,6 +244,7 @@ payment_ref_lbl = Label(window, font=('impact', 12),
 payment_ref_entry = ttk.Entry(
     window, textvariable=payment_ref, font=('Helvetica', 15, 'bold'))
 payment_ref_entry.place(width=100, x=475, y=350)
+payment_ref_entry.insert(0, '#')
 # ===================== Authorised column =================
 authorised_by_lbl = Label(window, font=('impact', 12),
                           text=('Authorised by'), foreground='black').place(x=25, y=390)
@@ -222,7 +282,7 @@ approval_date_entry = ttk.Entry(
     window, textvariable=approval_date_ent, font=('Helvetica', 15, 'bold'))
 approval_date_entry.place(width=100, x=475, y=430)
 # ================ Buttons For Action=================
-submit_btn = ttk.Button(window, text='SUBMIT', cursor='hand2')
+submit_btn = ttk.Button(window, command=submit, text='SUBMIT', cursor='hand2')
 submit_btn.place(x=500, y=500)
 
 extra_btn = ttk.Button(window, command=extra, text='EXTRA', cursor='hand2')
