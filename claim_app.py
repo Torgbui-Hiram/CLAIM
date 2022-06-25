@@ -22,8 +22,8 @@ work_process2 = IntVar()
 item = IntVar()
 item_quantity = IntVar()
 item_description = StringVar()
-item_cost = IntVar()
-total_cost = IntVar()
+item_cost = DoubleVar()
+total_cost = DoubleVar()
 refrence_no = IntVar()
 payment_type = StringVar()
 payment_ref = StringVar()
@@ -76,6 +76,15 @@ def extra():
     total_cost_entry.delete(0, END)
 
 
+def tatal_cost(e):
+    total_cost_entry.delete(0, END)
+    a = item_quantity.get()
+    b = item_cost.get()
+    total = a*b
+    total_cost_entry.insert(0, total)
+    return total
+
+
 # ===========================================
 logo = ImageTk.PhotoImage(file="image\ias.png")
 logo_img = Label(window, bd=0, image=logo)
@@ -116,7 +125,6 @@ corrective_check_box.place(x=220, y=150)
 preventive_check_box = ttk.Checkbutton(
     window, variable=work_process2, text='PREVENTATIVE')
 preventive_check_box.place(x=330, y=150)
-corrective_check_box.bind("<Button-1>")
 preventive_check_box.bind("<Button-1>")
 
 item_lbl = Label(window, font=('impact', 12),
@@ -153,6 +161,12 @@ total_cost_entry = ttk.Entry(
     window, textvariable=total_cost, font=('Helvetica', 15, 'bold'))
 total_cost_entry.place(width=140, x=455, y=290)
 total_cost_entry.configure(background='white')
+
+
+# ============Action bindings===============
+total_cost_entry.bind("<Button-1>", tatal_cost)
+
+
 # ================== Reference column ====================
 refrence_no_lbl = Label(window, font=('impact', 12),
                         text=('Ref No'), foreground='black').place(x=35, y=350)
