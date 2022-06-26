@@ -127,7 +127,7 @@ def submit():
                     "ITEM": item_entry.get(),
                     "QUANTITY": quantity_entry.get(),
                     "DESCRIPTION": description_entry.get(),
-                    "ITEM_COST": item_entry.get(),
+                    "ITEM_COST": unit_cost_entry.get(),
                     "TOTAL_COST": total_cost_entry.get(),
                     "REFRENCE_NO": refrence_no_entry.get(),
                     "PAYMENT_TYPE": payment_type_entry.get(),
